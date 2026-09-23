@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from app.core.config import settings
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
+from collections.abc import Iterator
 
 
 database_url = URL.create(
@@ -20,3 +21,11 @@ engine = create_engine(
         "connect_timeout": 3
     }
 )
+
+
+SessionLocal = sessionmaker(bind=engine)
+
+
+def get_db() -> Iterator[Session]:
+    with SessionLocal() as session:
+        yield session

@@ -1,6 +1,21 @@
-.venv/
+.venv
 __pycache__/
-*.pyc
-.env
-check_db.py
 
+# Остальные файлы скомпилированного Python
+*.pyo
+
+# Кэши тестов и анализаторов
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Отчёты покрытия тестами
+.coverage
+.coverage.*
+htmlcov/
+
+# Локальные варианты настроек
+.env.*
+!.env.example
+
+check_db.py
