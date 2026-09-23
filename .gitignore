@@ -15,7 +15,7 @@ __pycache__/
 htmlcov/
 
 # Локальные варианты настроек
-.env.*
+.env
 !.env.example
 
 check_db.py
