@@ -8,12 +8,12 @@ from app.db.session import get_db
 router = APIRouter()
 
 
-@router.get("/health", response_model=HealthResponse)
+@router.get("/health", response_model=HealthResponse, tags=["Health"])
 def health_check() -> HealthResponse:
     return get_health()
 
 
-@router.get("/health/database", response_model=HealthResponse, )
+@router.get("/health/database", response_model=HealthResponse, tags=["Health"])
 def health_database(db: Session = Depends(get_db)) -> HealthResponse:
     if not check_database(db):
         raise HTTPException(status_code=503, detail="Database unavailable")
