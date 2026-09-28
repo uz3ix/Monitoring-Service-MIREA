@@ -8,6 +8,7 @@ from alembic import context
 from app.db.session import database_url
 from app.db.base import Base
 from app.modules.devices.models import Device
+from app.modules.metrics.models import Metrics
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

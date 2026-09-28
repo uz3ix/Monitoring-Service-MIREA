@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import HttpUrl
+from email import header
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from app.modules.devices.exceptions import AgentTokenAlreadyExistsError
 from app.modules.devices.schemas import DeviceCreate, DeviceResponse
 from sqlalchemy.orm import Session
@@ -55,15 +56,17 @@ def get_devices(
     return list_devices
 
 
-@router.get("/devices/token/{agent_token}",
+@router.get("/agent",
             response_model=DeviceResponse,
             status_code=200,
             tags=["Device"])
 def get_devices_by_token(
-    agent_token: str,
+    agent_token: str | None = Header(default=None, alias="X-Agent-Token"),
     db: Session = Depends(get_db)
 ) -> Device | None:
+    if agent_token is None:
+        raise HTTPException(status_code=401, detail="Invalid Agent Token")
     device = get_devices_by_token_service(db, agent_token)
     if device is None:
-        raise HTTPException(status_code=404, detail="Agent not found")
+        raise HTTPException(status_code=401, detail="Invalid Agent Token")
     return device
