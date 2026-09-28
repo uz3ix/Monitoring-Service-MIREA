@@ -27,3 +27,9 @@ def get_device_by_token_hash(db: Session,
         Device.agent_token_hash == agent_token_hash
     )
     return db.scalar(statement)
+
+
+def update_device_name(db: Session, device: Device, name: str) -> Device:
+    device.name = name
+    db.flush()
+    return device

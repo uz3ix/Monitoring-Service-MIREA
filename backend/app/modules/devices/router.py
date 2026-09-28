@@ -2,7 +2,7 @@ from email import header
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from app.modules.devices.exceptions import AgentTokenAlreadyExistsError
-from app.modules.devices.schemas import DeviceCreate, DeviceResponse
+from app.modules.devices.schemas import DeviceCreate, DeviceResponse, DeviceRename
 from sqlalchemy.orm import Session
 from app.modules.devices.models import Device
 from app.db.session import get_db
@@ -10,7 +10,8 @@ from app.modules.devices.service import (
     create_device as create_device_service,
     get_device_by_id as get_device_service,
     get_devices as get_devices_service,
-    get_device_by_token as get_devices_by_token_service
+    get_device_by_token as get_devices_by_token_service,
+    update_device_name as update_device_name_service
 )
 
 router = APIRouter()
@@ -70,3 +71,11 @@ def get_devices_by_token(
     if device is None:
         raise HTTPException(status_code=401, detail="Invalid Agent Token")
     return device
+
+
+@router.patch("/devices/{device_id}", response_model=DeviceResponse, status_code=200, tags=["Device"])
+def update_device_name(data: DeviceRename, device_id: int, db: Session = Depends(get_db)) -> Device:
+    device_new_name = update_device_name_service(db, data, device_id)
+    if device_new_name is None:
+        raise HTTPException(status_code=404, detail="Device not found")
+    return device_new_name

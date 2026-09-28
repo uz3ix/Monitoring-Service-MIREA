@@ -22,3 +22,8 @@ class DeviceResponse(BaseModel):
     last_seen_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DeviceRename(BaseModel):
+    name: Annotated [str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    
