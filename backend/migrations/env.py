@@ -1,12 +1,11 @@
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import create_engine, pool
 
-from app.db.session import database_url
 from app.db.base import Base
+from app.db.session import database_url
+from app.modules.auth.models import User, UserSession
 from app.modules.devices.models import Device
 from app.modules.metrics.models import Metrics
 

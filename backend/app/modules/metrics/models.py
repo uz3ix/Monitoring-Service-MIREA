@@ -1,8 +1,8 @@
 from datetime import datetime
-from app.db.base import Base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Double, ForeignKey, BigInteger, DateTime, func, Index
+from sqlalchemy import BigInteger, DateTime, Double, ForeignKey, Index, func
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
 
 
 class Metrics(Base):
@@ -20,4 +20,5 @@ class Metrics(Base):
 
     __table_args__ = (
         Index("ix_metrics_device_collected_at", "device_id", "collected_at"),
+        Index("ix_metrics_collected_at", "collected_at"),
     )

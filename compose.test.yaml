@@ -1,0 +1,16 @@
+services:
+  test-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: monitoring_test
+      POSTGRES_PASSWORD: local-test-only
+      POSTGRES_DB: monitoring_test
+    ports:
+      - "127.0.0.1:55439:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monitoring_test -d monitoring_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 30

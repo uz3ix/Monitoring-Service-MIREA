@@ -1,7 +1,9 @@
-from app.modules.health.schemas import HealthResponse
-from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from app.modules.health.schemas import HealthResponse
+from app.modules.health.repository import (
+    check_database as check_database_record
+)
 
 
 def get_health() -> HealthResponse:
@@ -11,8 +13,6 @@ def get_health() -> HealthResponse:
 
 def check_database(db: Session) -> bool:
     try:
-        result = db.execute(text("SELECT 1;")).scalar()
-
-        return result == 1
+        return check_database_record(db)
     except SQLAlchemyError:
         return False

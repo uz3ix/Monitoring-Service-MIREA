@@ -1,5 +1,7 @@
 .venv
 __pycache__/
+*.pyc
+.env.*
 
 # Остальные файлы скомпилированного Python
 *.pyo
@@ -19,3 +21,7 @@ htmlcov/
 !.env.example
 
 check_db.py
+
+requirements-dev.txt
+tests/
+pytest.ini
