@@ -1,30 +1,31 @@
-from collector import (
-    get_cpu_percent, 
-    get_memory_usage, 
-    get_disk_usage,
-    collect_metrics
-)
-
-import psutil
-
-print(get_cpu_percent())
-print(get_memory_usage())
-# print(get_disk_usage(["C:/"]))
-
-print("///////////")
-
-# print(collect_metrics("C:/"))
-
-
-print(psutil.disk_partitions(all=False))
-
-
-
 import json
-from collector import (
-    get_disks_usage
-)
+from collector import collect_metrics
+from client import send_metrics
+from config import settings
+import time
+import httpx
 
-print(json.dumps(get_disks_usage(), indent=4, ensure_ascii=False))
+# print(json.dumps(collect_metrics(), indent=4, ensure_ascii=False))
+def main():
+    while True:
+        try:
+            metrics = collect_metrics(settings.service_names)
+            send_metrics(metrics)
+            print("Метрики отправлены")
+        except httpx.HTTPStatusError as error:
+            print(error.response.status_code)
+        except httpx.RequestError:
+            print("Мтерики не были отправлены")
+        except OSError:
+            print("Ошибка при сборе метрик")
+        
+        print(metrics)
+        
+        time.sleep(settings.send_interval_seconds)
 
-print(get_disk_usage("C:/"))
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Агент остановлен")

@@ -27,3 +27,5 @@ tests/
 pytest.ini
 
 backend/
+
+test_metrics.py
