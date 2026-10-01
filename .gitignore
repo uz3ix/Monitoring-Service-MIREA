@@ -23,9 +23,17 @@ htmlcov/
 check_db.py
 
 requirements-dev.txt
+requirements-build.txt
+
 tests/
 pytest.ini
 
 backend/
 
 test_metrics.py
+
+# Собранные файлы агента
+agent/build/
+agent/dist/
+agent/.venv-build/
+agent/agent

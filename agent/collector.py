@@ -1,5 +1,7 @@
 import platform
 import subprocess
+import os
+import sys
 import psutil
 from datetime import datetime, timezone
 
@@ -51,9 +53,15 @@ def get_windows_service_status(name: str) -> str:
     
     
 def get_linux_service_status(name: str) -> str:
+    environment = os.environ.copy()
+    if getattr(sys, "frozen", False):
+        if "LD_LIBRARY_PATH_ORIG" in environment:
+            environment["LD_LIBRARY_PATH"] = environment["LD_LIBRARY_PATH_ORIG"]
+        else:
+            environment.pop("LD_LIBRARY_PATH", None)
     try:
         result = subprocess.run(["systemctl", "show", "--property=LoadState,ActiveState,SubState", "--", name],
-            capture_output=True, text=True, timeout=5)
+            capture_output=True, text=True, timeout=5, env=environment)
     except (OSError, subprocess.TimeoutExpired):
         return "unknown"
     

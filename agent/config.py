@@ -5,7 +5,7 @@ import sys
 
 
 if getattr(sys, "frozen", False):
-       BASE_DIR = Path(sys.executable).resolve().parent
+    BASE_DIR = Path(sys.executable).resolve().parent
 else:
     BASE_DIR = Path(__file__).resolve().parent
 
