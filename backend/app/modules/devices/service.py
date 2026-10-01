@@ -1,11 +1,11 @@
 from datetime import timedelta
+from fastapi import HTTPException
 from psycopg.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import hash_agent_token
 from app.core.time import retention_cutoff, utcnow
-from app.modules.devices.exceptions import AgentTokenAlreadyExistsError
 from app.modules.devices.models import Device
 from app.modules.devices.repository import (
     get_device_by_token_hash as get_device_by_token_hash_record,
@@ -34,7 +34,7 @@ def create_device(db: Session, data: DeviceCreate) -> Device:
     except IntegrityError as error:
         db.rollback()
         if isinstance(error.orig, UniqueViolation) and (error.orig.diag.constraint_name == "uq_devices_agent_token_hash"):
-            raise AgentTokenAlreadyExistsError() from error
+            raise HTTPException(409, "Agent token already in use") from None
         raise
     except SQLAlchemyError:
         db.rollback()
@@ -101,7 +101,7 @@ def rotate_agent_token(db: Session, device_id: int, token: str) -> Device | None
     except IntegrityError as error:
         db.rollback()
         if (isinstance(error.orig, UniqueViolation) and error.orig.diag.constraint_name == "uq_devices_agent_token_hash"):
-            raise AgentTokenAlreadyExistsError() from error
+            raise HTTPException(409, "Agent token already in use") from None
         raise
     except SQLAlchemyError:
         db.rollback()

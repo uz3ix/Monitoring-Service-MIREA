@@ -12,7 +12,6 @@ from app.modules.devices.service import (
     rotate_agent_token as rotate_agent_token_service,
     delete_device as delete_device_service
 )
-from app.modules.devices.exceptions import AgentTokenAlreadyExistsError
 from app.modules.devices.models import Device
 from app.modules.devices.schemas import AgentTokenUpdate, DeviceCreate, DeviceRename, DeviceResponse
 
@@ -22,10 +21,7 @@ admin = [Depends(current_user)]
 
 @router.post("/devices", response_model=DeviceResponse, status_code=201, dependencies=admin)
 def device_create(data: DeviceCreate, db: Session = Depends(get_db)):
-    try:
-        return create_device_service(db, data)
-    except AgentTokenAlreadyExistsError:
-        raise HTTPException(409, "Agent token already in use") from None
+    return create_device_service(db, data)
 
 
 @router.get("/devices", response_model=list[DeviceResponse], dependencies=admin)
@@ -64,10 +60,7 @@ def update_device_name(device_id: int, data: DeviceRename, db: Session = Depends
 
 @router.put("/devices/{device_id}/agent-token", response_model=DeviceResponse, dependencies=admin)
 def rotate_token(device_id: int, data: AgentTokenUpdate, db: Session = Depends(get_db)):
-    try:
-        device = rotate_agent_token_service(db, device_id, data.agent_token)
-    except AgentTokenAlreadyExistsError:
-        raise HTTPException(409, "Agent token already in use") from None
+    device = rotate_agent_token_service(db, device_id, data.agent_token)
     if device is None:
         raise HTTPException(404, "Device not found")
     return device_view_service(db, device)

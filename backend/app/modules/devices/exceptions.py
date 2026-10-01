@@ -1,2 +1,0 @@
-class AgentTokenAlreadyExistsError(Exception):
-    pass
