@@ -4,17 +4,32 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validato
 from app.core.config import settings
 from app.core.time import utcnow
 
+
 ByteCount = Annotated[int, Field(strict=True, ge=0, le=9223372036854775807)]
 TotalBytes = Annotated[int, Field(strict=True, gt=0, le=9223372036854775807)]
 
 
-class MetricsCreate(BaseModel):
+class DiskMetrics(BaseModel):
+    name: str = Field(min_length=1, max_length=512)
+    disk_used_bytes: ByteCount
+    disk_total_bytes: TotalBytes
+    
+    model_config = ConfigDict(extra="forbid")
+    @model_validator(mode="after")
+    def validate_disk(self) -> Self:
+        if not self.name.strip():
+            raise ValueError("Disk name cannot be blank")
+        if self.disk_used_bytes > self.disk_total_bytes:
+            raise ValueError("disk_used_bytes cannot exceed disk_total_bytes")
+        return self
+    
+    
+class MetricsCreate(BaseModel): 
     collected_at: AwareDatetime
     cpu_percent: float | None = Field(default=None, ge=0, le=100, allow_inf_nan=False)
     memory_used_bytes: ByteCount | None = None
     memory_total_bytes: TotalBytes | None = None
-    disk_used_bytes: ByteCount | None = None
-    disk_total_bytes: TotalBytes | None = None
+    disks: list[DiskMetrics] | None = Field(default=None, max_length=100)
     services: dict[str, str] | None = None
     model_config = ConfigDict(extra="forbid")
 
@@ -23,11 +38,8 @@ class MetricsCreate(BaseModel):
         now = utcnow()
         if (not now - timedelta(days=settings.retention_days) <= self.collected_at <= now + timedelta(minutes=5)):
             raise ValueError("collected_at is outside the allowed retention/future window")
-        for prefix in ("memory", "disk"):
-            used = getattr(self, f"{prefix}_used_bytes")
-            total = getattr(self, f"{prefix}_total_bytes")
-            if used is not None and total is not None and used > total:
-                raise ValueError(f"{prefix}_used_bytes cannot exceed total")
+        if (self.memory_used_bytes is not None and self.memory_total_bytes is not None and self.memory_used_bytes > self.memory_total_bytes):
+            raise ValueError("memory_used_bytes cannot exceed memory_total_bytes")
         if self.services is not None:
             if len(self.services) > 100:
                 raise ValueError("At most 100 services are allowed")
@@ -39,9 +51,8 @@ class MetricsCreate(BaseModel):
                 "cpu_percent",
                 "memory_used_bytes",
                 "memory_total_bytes",
-                "disk_used_bytes",
-                "disk_total_bytes",
-                "services",
+                "disks",
+                "services"
             )
         ):
             raise ValueError("At least one measurement is required")
@@ -56,8 +67,7 @@ class MetricsResponse(BaseModel):
     cpu_percent: float | None
     memory_used_bytes: int | None
     memory_total_bytes: int | None
-    disk_used_bytes: int | None
-    disk_total_bytes: int | None
+    disks: list[DiskMetrics] | None = None
     services: dict[str, str] | None
     model_config = ConfigDict(from_attributes=True)
 
@@ -69,8 +79,7 @@ class HistoryPoint(BaseModel):
     cpu_max_percent: float | None
     memory_used_bytes: float | None
     memory_total_bytes: float | None
-    disk_used_bytes: float | None
-    disk_total_bytes: float | None
+    disks: list[DiskMetrics] | None = None
 
 
 class MetricsHistory(BaseModel):

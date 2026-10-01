@@ -6,13 +6,7 @@ from sqlalchemy.orm import Session
 from app.modules.metrics.models import Metrics
 from app.modules.metrics.schemas import MetricsCreate
 
-NUMERIC_FIELDS = (
-    "cpu_percent",
-    "memory_used_bytes",
-    "memory_total_bytes",
-    "disk_used_bytes",
-    "disk_total_bytes",
-)
+NUMERIC_FIELDS = ("cpu_percent", "memory_used_bytes", "memory_total_bytes")
 
 
 def get_latest_metrics(db: Session, device_id: int, cutoff: datetime) -> Metrics | None:
@@ -32,21 +26,37 @@ def create_metrics(db: Session, device_id: int, data: MetricsCreate, received_at
 
 
 def history_rows(db: Session, device_id: int, start: datetime, end: datetime, step: int):
-    bucket = func.floor((func.extract("epoch", Metrics.collected_at) - start.timestamp()) / step).label("bucket")
+    bucket = func.floor(
+        (func.extract("epoch", Metrics.collected_at) - start.timestamp()) / step
+    ).label("bucket")
+
+    conditions = (Metrics.device_id == device_id, Metrics.collected_at >= start, Metrics.collected_at < end)
+
     statement = (
         select(
             bucket,
             func.count().label("samples"),
             *(func.avg(getattr(Metrics, field)).label(field) for field in NUMERIC_FIELDS),
             func.max(Metrics.cpu_percent).label("cpu_max_percent"),
-        )
-        .where(
-            Metrics.device_id == device_id,
-            Metrics.collected_at >= start,
-            Metrics.collected_at < end,
-        ).group_by(bucket).order_by(bucket)
+        ).where(*conditions).group_by(bucket).order_by(bucket)
     )
-    return db.execute(statement).mappings().all()
+
+    rows = db.execute(statement).mappings().all()
+
+    disks_statement = (
+        select(bucket, Metrics.disks)
+        .where(*conditions)
+        .distinct(bucket)
+        .order_by(bucket, Metrics.collected_at.desc(), Metrics.id.desc())
+    )
+
+    disks_rows = db.execute(disks_statement).mappings().all()
+    disks_by_bucket = {
+        row["bucket"]: row["disks"]
+        for row in disks_rows
+    }
+
+    return [{**row, "disks": disks_by_bucket.get(row["bucket"])} for row in rows]
 
 
 def get_latest_metrics_for_devices(db: Session, device_ids: list[int], cutoff: datetime) -> list[Metrics]:

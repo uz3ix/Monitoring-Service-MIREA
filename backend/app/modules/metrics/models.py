@@ -14,8 +14,7 @@ class Metrics(Base):
     cpu_percent: Mapped[float | None] = mapped_column(Double)
     memory_used_bytes: Mapped[int | None] = mapped_column(BigInteger)
     memory_total_bytes: Mapped[int | None] = mapped_column(BigInteger)
-    disk_used_bytes: Mapped[int | None] = mapped_column(BigInteger)
-    disk_total_bytes: Mapped[int | None] = mapped_column(BigInteger)
+    disks: Mapped[list[dict[str, str | int]] | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
     services: Mapped[dict[str, str] | None] = mapped_column(JSONB)
 
     __table_args__ = (
