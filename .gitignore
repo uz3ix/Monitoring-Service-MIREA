@@ -23,7 +23,6 @@ htmlcov/
 check_db.py
 
 requirements-dev.txt
-tests/
 pytest.ini
 
 agent/
