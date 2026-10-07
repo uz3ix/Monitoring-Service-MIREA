@@ -101,6 +101,9 @@ chmod +x monitoring-agent
 
 # Скачать
 
+[Агент windows](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/windows-agent.zip)
+[Агент linux](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/linux-agent.zip)
+[Сервис](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/service-files.zip)
 
 # Выполнили
 
