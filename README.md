@@ -33,7 +33,7 @@
 ### Запуск сервиса 
 
 - Для того чтобы запустить бэкенд+фронтенд+БД, вам нужно иметь на копмьютере docker. 
-- Скачать все для развертывания [Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/service-files.zip).
+- Скачать все для развертывания [Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.1.0/service-files.zip).
 - Скопировать `.env.example` в `.env` и дополнить его своими настройками
 - Запустить `docker compose up -d` (образы сами спулятся, так что отдельно их устанвливать не надо)
 - Открыть интерфейс и добавить новое устройство.
@@ -46,7 +46,7 @@
 
 #### Windows 
 
-[Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/windows-agent.zip)
+[Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.1.0/windows-agent.zip)
 
 Распаковываем архив
 Дописываем нужные настройки в `.env`
@@ -68,7 +68,7 @@
 
 #### linux
 
-[Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.0.1-api/linux-agent.zip)
+[Скачать тут](https://github.com/uz3ix/Monitoring-Service-MIREA/releases/download/v0.1.0/linux-agent.zip)
 
 Распаковываем архив 
 Дописываем нужные настройки в `.env`
@@ -97,7 +97,6 @@ chmod +x monitoring-agent
 # Документация разработки 
  - [Ссылка на readme бэкенда](https://github.com/uz3ix/Monitoring-Service-MIREA/tree/backend/dev/backend)
  - [Ссылка на общую инструкцию бэкенда/агента](https://github.com/uz3ix/Monitoring-Service-MIREA/blob/weeks/2/reports/week2/Отчет_Н2.md)
- - [ссылка]()
 
 # Скачать
 
@@ -114,5 +113,3 @@ chmod +x monitoring-agent
 - Верхов Арсений
 - Шевченко Вероника
 
-
-# 
