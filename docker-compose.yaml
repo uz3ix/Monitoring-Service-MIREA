@@ -37,6 +37,8 @@ services:
   frontend:
     build:
       context: ${FRONTEND_CONTEXT:-../../Frontend/monitoring-service}
+      args:
+        ONLINE_TIMEOUT_SECONDS: ${ONLINE_TIMEOUT_SECONDS:-180}
     image: ${FRONTEND_IMAGE:-monitoring-frontend:local}
     restart: unless-stopped
     ports:
