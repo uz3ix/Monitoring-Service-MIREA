@@ -34,5 +34,16 @@ services:
       timeout: 6s
       retries: 3
 
+  frontend:
+    build:
+      context: ${FRONTEND_CONTEXT:-../../Frontend/monitoring-service}
+    image: ${FRONTEND_IMAGE:-monitoring-frontend:local}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
 volumes:
   postgres_data:
