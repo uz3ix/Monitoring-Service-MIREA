@@ -45,7 +45,6 @@ async def lifespan(app: FastAPI):
 
 
 class BodyLimitMiddleware:
-    """Bound request bodies before parsing JSON, including chunked requests."""
 
     def __init__(self, app):
         self.app = app
