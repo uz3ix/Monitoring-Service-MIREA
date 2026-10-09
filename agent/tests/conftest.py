@@ -18,7 +18,7 @@ SETTING_NAMES = {
 
 @pytest.fixture(autouse=True)
 def isolated_environment(monkeypatch):
-    # Реальные настройки и сеть не должны влиять на тесты.
+    
     for name in list(os.environ):
         if name.upper() in SETTING_NAMES:
             monkeypatch.delenv(name)
@@ -39,7 +39,7 @@ def load_module(name, monkeypatch):
 
 @pytest.fixture
 def agent_modules(monkeypatch):
-    # Settings создаётся при импорте. Настоящий agent/.env не читаем.
+    
     with monkeypatch.context() as setup:
         setup.setenv("SERVER_URL", "http://monitoring.test:8000")
         setup.setenv("AGENT_TOKEN", "a" * 32)
